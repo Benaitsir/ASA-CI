@@ -74,7 +74,63 @@ comp_ann_bases <- function(branche) {
   }
   
   else if (branhe == "VIE") {
-    print("Fonction en cours de développement veuillez patienter =) ")
+    # Feuilles des états similaires ----
+    ## Liste des compagnies
+    liste.comp <- 
+      c("AZ.V", "AA.V", "LEADWAY.V", "NSIA.V", "PRUDE BELIFE", "SAAR.V", "SANLAM.V", 
+        "SUNU.V", "WAFA.V", "YAKO", "TOTAL")
+    
+    ## Colonnes des valeurs
+    colonnes <- 
+      c("SOCIETE", 
+        "ASS_IND_C.V", "ASS_IND_C.D", "ASS_IND_M.", "ASS_IND_EP.", "ASS_IND_CAP.", "ASS_IND_COMP.",
+        "ASS_IND_COL", "ASS_COL_C.D", "ASS_COL_M.", "ASS_COL_EP.", "ASS_COL_CAP.", "ASS_COL_COMP.",
+        "ENSEMBLE", "ACCEPTATION", "TOTAL")
+    
+    ## Formules
+    # ENSEMBLE = somme de toutes les colonnes précédantes
+    # TOTAL = ENSEMBLE + ACCEPTATION
+    
+    ## Mise en forme 
+    base <- as.data.frame(matrix(data = 0, nrow = length(liste.comp), ncol = length(colonnes)))
+    colnames(base) <- colonnes
+    base[, "SOCIETE"] <- liste.comp
+    
+    # Feuille de réasssurance ----
+    col.reass <- 
+      c("SOCIETE", "PRIMES_CEDEES", "PROV_PRIM_OUV.", "PROV_PRIM_CLO.", "PRIM_ACQ_REASS", 
+        "PART_REASS_S.C", "PROV_CHRG_OUV", "PROV_CHRG_CLO", "COMMISSIONS", "INT_CRE", "PART_REASS_CHRG", 
+        "SOLDE_REASS")
+    ## Formule
+    # PRIM_ACQ_REASS = PRIMES_CEDEES - (PROV_PRIM_CLO. - PROV_PRIM_OUV.) 
+    # PART_REASS_CHRG = PART_REASS_S.C - (PROV_CHRG_OUV - PROV_CHRG_CLO) + COMMISSIONS - INT_CRE
+    # SOLDE_REASS = PART_REASS_CHRG - PRIM_ACQ_REASS
+    
+    ## Mise en forme
+    base.reass <- as.data.frame(matrix(data = 0, nrow = length(liste.comp), ncol = length(col.reass)))
+    colnames(base.reass) <- col.reass
+    base.reass[, "SOCIETE"] <- liste.comp
+    
+    # Feuille des engagements règlementés ----
+    col.reg <- 
+      c("SOCIETE", "PREC", "PSAP", "PMATH", "AUT_PROV", "AUT_ENG_REG", "TOT_ENG", "VAL_ETAT",
+        "IMM", "AUT_VAL", "BANQUE", "AVA_CON", "PRM_REC", "TOT_PLAC", "MARG_COUV", 
+        "TAUX_COUV")
+    ## Formule
+    # TOT_ENG = PREC + PSAP + PMATH + AUT_PROV + AUT_ENG_REG 
+    # TOT_PLAC = VAL_ETAT + IMM + AUT_VAL + BANQUE + AVA_CON + PRM_REC
+    # MARG_COUV = TOT_PLAC - TOT_ENG
+    # TAUX_COUV = TOT_PLAC / TOT_ENG
+    
+    ## Mise en forme
+    base.reg <- as.data.frame(matrix(data = 0, nrow = length(liste.comp), ncol = length(col.reg)))
+    colnames(base.reg) <- col.reg
+    base.reg[, "SOCIETE"] <- liste.comp
+    
+    # Sauvegarde des documents ----
+    saveRDS(base, "5 - Scripts/compil_ann_base_VIE.RDS")
+    saveRDS(base.reass, "5 - Scripts/compil_ann_reass_VIE.RDS")
+    saveRDS(base.reg, "5 - Scripts/compil_ann_reg_VIE.RDS")
   }
   
   else {print("Les seules valeurs acceptables sont : 'IARD' ou 'VIE' ")}
